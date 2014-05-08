@@ -44,25 +44,34 @@ public class Huffman {
 				try {
 					Integer maxTasksCount = Integer.parseInt(args[3]);
 					if (maxTasksCount < 1) {
-						throw new Exception("Thread count must be >= 1");
+						throw new NumberFormatException(
+								"Thread count must be >= 1");
 					}
 					return maxTasksCount;
 				} catch (NumberFormatException p) {
-					throw new Exception("Reading max tasks count failed");
-				} catch (Exception ex) {
-					System.out.println(ex.getMessage());
+					System.err.println("Tasks count not appropriate");
 				}
 			}
 		}
-		throw new Exception("No max tasks count indicated");
+		throw new Exception("Max tasks count reading failed");
 	}
 
+	private static Boolean getIsQuiet(String[] args) {
+		if (args.length == 5) {
+			for (String isQuietIndicator : QUIET_MODE_INDICATORS) {
+				if (args[4] == isQuietIndicator) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+/*
 	public static void main(String[] args) throws Exception {
-		System.out.println(args[0]);
-		System.out.println(args[1]);
-		filePath = getFilePath(args);
-		maxTasksCount = getMaxTasksCount(args);
-
+		String[] args1 = { "-f", "hello.bat", "-t", "535" };
+		filePath = getFilePath(args1);
+		maxTasksCount = getMaxTasksCount(args1);
+		isQuiet = getIsQuiet(args1);
 	}
-
+	*/
 }
