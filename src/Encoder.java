@@ -9,7 +9,7 @@ import java.io.RandomAccessFile;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
-public class FrequencyTable {
+public class Encoder {
 	/**
 	 * The characters in the input string are ASCII encoded
 	 * */
@@ -21,7 +21,7 @@ public class FrequencyTable {
 
 	private String filePath;
 
-	public FrequencyTable(String filePath) {
+	public Encoder(String filePath) {
 		this.filePath = filePath;
 	}
 
@@ -80,5 +80,4 @@ public class FrequencyTable {
 
 		return frequencyMap;
 	}
-
 }
