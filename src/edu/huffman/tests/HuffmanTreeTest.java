@@ -2,8 +2,6 @@ package edu.huffman.tests;
 
 import static org.junit.Assert.*;
 
-import javax.management.DescriptorKey;
-
 import org.junit.Before;
 import org.junit.Test;
 

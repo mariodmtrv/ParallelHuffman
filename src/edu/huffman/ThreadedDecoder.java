@@ -1,3 +1,5 @@
+package edu.huffman;
+
 public class ThreadedDecoder extends Huffman {
 	/**
 	 * The output destination of the produced compressed files

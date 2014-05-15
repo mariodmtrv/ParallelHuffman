@@ -1,3 +1,6 @@
+package edu.huffman;
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,8 +15,11 @@ import java.util.stream.Stream;
 
 import edu.huffman.algorithm.Tree;
 
-public class Encoder {
+public class Encoder{
 	private Tree huffmanTree;
+	public Encoder() {
+		this.huffmanTree = new Tree();
+	}
 
 	/**
 	 * Builds a new Huffman tree
@@ -24,7 +30,6 @@ public class Encoder {
 		// builds the frequency map
 		int[] frequencyMap = buildFrequencyMap(data);
 		// builds the huffman tree
-		this.huffmanTree = new Tree();
 		huffmanTree.buildTree(frequencyMap);
 		// compresses the data
 		String compressed = compressData(data);

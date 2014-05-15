@@ -1,3 +1,5 @@
+package edu.huffman;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -74,6 +76,17 @@ public class ThreadedEncoder extends Huffman {
 			}
 		}
 		return filePart;
-
 	}
+
+	public String generateEncodedFilePart(ArrayList<String> data) {
+		StringBuilder result = new StringBuilder();
+		Encoder encoder = new Encoder();
+		String encodedData = encoder.encode(data);
+		String tree = encoder.getTree().toString();
+		result.append(tree);
+		result.append('\n');
+		result.append(encodedData);
+		return result.toString();
+	}
+	
 }
