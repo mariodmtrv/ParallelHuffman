@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tree {
+	public static final Character leftDirection = '0';
+	public static final Character rightDirection = '1';
 	private Node root;
 	private HashMap<Character, String> characterCodeMap;
 
@@ -54,16 +56,16 @@ public class Tree {
 
 	private String getTree(String string, int startPos, int maxEnd) {
 		int currentPos = startPos;
-		if (string.charAt(startPos) == '{') {
+		if (string.charAt(startPos) == Node.OPEN_TREE) {
 			int bracketsCount = 1;
 			while (bracketsCount > 0) {
 				currentPos++;
 				if (currentPos > maxEnd) {
 					break;
 				}
-				if (string.charAt(currentPos) == '{') {
+				if (string.charAt(currentPos) == Node.OPEN_TREE) {
 					bracketsCount++;
-				} else if (string.charAt(currentPos) == '}') {
+				} else if (string.charAt(currentPos) == Node.CLOSE_TREE) {
 					bracketsCount--;
 				}
 
@@ -90,12 +92,12 @@ public class Tree {
 
 		if (leftTree != null) {
 			StringBuilder currentLeft = new StringBuilder(characterCode);
-			currentLeft.append("0");
+			currentLeft.append(Tree.leftDirection);
 			addCharCodeToTable(leftTree, currentLeft);
 		}
 		if (rightTree != null) {
 			StringBuilder currentRight = new StringBuilder(characterCode);
-			currentRight.append("1");
+			currentRight.append(Tree.rightDirection);
 			addCharCodeToTable(rightTree, currentRight);
 		}
 	}
@@ -161,4 +163,7 @@ public class Tree {
 		return availableNodes.poll();
 	}
 
+	public Node getInnerTree() {
+		return root;
+	}
 }

@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import edu.huffman.algorithm.Tree;
 
-public class HuffmanEncodingTest {
+public class HuffmanTreeTest {
 
 	private Tree generateTree() {
 		int[] frequencyMap = new int[256];

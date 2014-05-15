@@ -1,1 +1,5 @@
 /edu
+/Decoder.class
+/StreamDecoder.class
+/ThreadedEncoder.class
+/ThreadedDecoder.class

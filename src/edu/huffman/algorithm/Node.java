@@ -1,12 +1,14 @@
 package edu.huffman.algorithm;
 
-class Node implements Comparable<Node> {
+public class Node implements Comparable<Node> {
 	private char character;
 	private int frequency;
 	private Node left;
 	private Node right;
 	public static final Character NOT_CHARACTER = '$';
-	public static final String EMPTY_NODE = "{}";
+	public static final Character OPEN_TREE = '{';
+	public static final Character CLOSE_TREE = '}';
+	public static final String EMPTY_NODE = OPEN_TREE.toString() + CLOSE_TREE;
 
 	/**
 	 * For node containing character
@@ -78,7 +80,7 @@ class Node implements Comparable<Node> {
 		if (node == null)
 			return EMPTY_NODE;
 		StringBuilder sb = new StringBuilder();
-		sb.append("{");
+		sb.append(OPEN_TREE);
 
 		sb.append("[" + node.character + "," + node.frequency + "]");
 
@@ -88,7 +90,7 @@ class Node implements Comparable<Node> {
 
 		sb.append(stringify(node.right));
 
-		sb.append("}");
+		sb.append(CLOSE_TREE);
 		return sb.toString();
 	}
 }
