@@ -2,6 +2,8 @@ package edu.huffman.algorithm;
 
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Tree {
 	private Node root;
@@ -23,9 +25,52 @@ public class Tree {
 	}
 
 	public Node deserializeTree(String serializedTree) {
+		if (serializedTree.contentEquals(Node.EMPTY_NODE)) {
+			return null;
+		}
+		// a tree starts with a letter and its occurrence count
+		String regex = "^\\{\\[(.),(\\d+)\\]";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(serializedTree);
+		Character letter = null;
+		Integer occurrenceCount = null;
+		if (matcher.find()) {
+			// only one character is guaranteed
+			letter = matcher.group(1).charAt(0);
+			occurrenceCount = Integer.parseInt(matcher.group(2));
+		}
+		int skip = 4 + matcher.group(1).length() + matcher.group(2).length();
+		String leftTreeSerialized = getTree(serializedTree, skip,
+				serializedTree.length() - 1);
+		String rightTreeSerialized = getTree(serializedTree, skip
+				+ leftTreeSerialized.length() + 1, serializedTree.length() - 1);
 
-		Node node = new Node('\0', 0, null, null);
+		Node leftTree = deserializeTree(leftTreeSerialized);
+		Node rightTree = deserializeTree(rightTreeSerialized);
+
+		Node node = new Node(letter, occurrenceCount, leftTree, rightTree);
 		return node;
+	}
+
+	private String getTree(String string, int startPos, int maxEnd) {
+		int currentPos = startPos;
+		if (string.charAt(startPos) == '{') {
+			int bracketsCount = 1;
+			while (bracketsCount > 0) {
+				currentPos++;
+				if (currentPos > maxEnd) {
+					break;
+				}
+				if (string.charAt(currentPos) == '{') {
+					bracketsCount++;
+				} else if (string.charAt(currentPos) == '}') {
+					bracketsCount--;
+				}
+
+			}
+			return (String) string.subSequence(startPos, currentPos + 1);
+		}
+		return null;
 	}
 
 	private void generateCharacterCodeMap() {

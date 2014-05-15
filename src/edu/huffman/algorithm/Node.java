@@ -5,7 +5,8 @@ class Node implements Comparable<Node> {
 	private int frequency;
 	private Node left;
 	private Node right;
-	public static final Character NOT_CHARACTER = '\0';
+	public static final Character NOT_CHARACTER = '$';
+	public static final String EMPTY_NODE = "{}";
 
 	/**
 	 * For node containing character
@@ -75,9 +76,10 @@ class Node implements Comparable<Node> {
 
 	private String stringify(Node node) {
 		if (node == null)
-			return "{}";
+			return EMPTY_NODE;
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
+
 		sb.append("[" + node.character + "," + node.frequency + "]");
 
 		sb.append(stringify(node.left));

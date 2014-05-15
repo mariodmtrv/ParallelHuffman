@@ -2,6 +2,8 @@ package edu.huffman.tests;
 
 import static org.junit.Assert.*;
 
+import javax.management.DescriptorKey;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +11,6 @@ import edu.huffman.algorithm.Tree;
 
 public class HuffmanEncodingTest {
 
-	@Before
 	private Tree generateTree() {
 		int[] frequencyMap = new int[256];
 		frequencyMap['A'] = 5;
@@ -36,10 +37,17 @@ public class HuffmanEncodingTest {
 	@Test
 	public void testTreeSerialization() {
 		Tree tree = generateTree();
-		String expected = "";
+		String expected = "{[$,12]{[$,7]{[$,4]{[R,2]{}${}}${[$,2]"
+				+ "{[D,1]{}${}}${[C,1]{}${}}}}${[B,3]{}${}}}${[A,5]{}${}}}";
 		String actual = tree.toString();
-		fail("Not yet implemented");
 		assertEquals(expected, actual);
 	}
 
+	@Test
+	public void testDeserialization() {
+		String serializedTree = "{[$,12]{[b,40]{}${}}${[a,6]{}${}}}";
+		Tree tree = new Tree();
+		tree.deserialize(serializedTree);
+		assertEquals(tree.toString(), serializedTree);
+	}
 }
