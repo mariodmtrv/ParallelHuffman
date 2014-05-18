@@ -6,8 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tree {
-	public static final Character leftDirection = '0';
-	public static final Character rightDirection = '1';
+	public static final Boolean leftDirection = false;
+	public static final Boolean rightDirection = true;
 	private Node root;
 	private HashMap<Character, String> characterCodeMap;
 
