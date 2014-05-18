@@ -12,14 +12,31 @@ public class ThreadedEncoder extends Huffman {
 	 * The characters in the input string are ASCII encoded
 	 * */
 
-	private Long bytesPerThread;
+	private int buffersPerThread;
 	private Thread jobs[];
+	private ArrayList<String> fileData;
 
-	private void initializeThreadParameters(long fileSize, int threadsCount) {
+	public ThreadedEncoder(String filepath, Integer maxTasksCount,
+			Boolean isQuiet) {
+		super(filepath, maxTasksCount, isQuiet);
+		this.outputDestination = filepath + ".compressed";
+		File file = new File(filePath);
+		fileData = new ArrayList<>();
+		initializeThreadParameters((int) file.length(), maxTasksCount);
+	}
 
-		bytesPerThread = (fileSize / ((threadsCount - 1) * BUFFER_SIZE))
-				* BUFFER_SIZE;
+	private void initializeThreadParameters(int fileSize, int threadsCount) {
+		if (threadsCount > 1) {
+			buffersPerThread = (fileSize / ((threadsCount - 1) * BUFFER_SIZE));
+		} else {
+			buffersPerThread = 0;
+		}
 		jobs = new Thread[threadsCount];
+		try {
+			readFile();
+		} catch (IOException e) {
+			System.err.println("Reading file failed.");
+		}
 	}
 
 	/**
@@ -31,44 +48,23 @@ public class ThreadedEncoder extends Huffman {
 		this.outputDestination = destination;
 	}
 
-	public ThreadedEncoder(String filepath, Integer maxTasksCount,
-			Boolean isQuiet) {
-		super(filepath, maxTasksCount, isQuiet);
-		this.outputDestination = filepath + ".compressed";
-		File file = new File(filePath);
-		initializeThreadParameters(file.length(), maxTasksCount);
-	}
-
-	private ArrayList<String> readFilePart(long seekToByte,
-			long requiredBytesCount) throws IOException {
-
-		ArrayList<String> filePart = new ArrayList<>();
+	private void readFile() throws IOException {
 
 		File sourceFile = new File(filePath);
-
-		long startAtByte = 0;
-
-		try {
-
-			RandomAccessFile rand = new RandomAccessFile(sourceFile, "r");
-			rand.seek(seekToByte);
-			startAtByte = rand.getFilePointer();
-			rand.close();
-
-		} catch (IOException e) {
-		}
 
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(sourceFile));
-			reader.skip(startAtByte);
 			String line;
-			long totalRead = 0;
+			int totalRead = 0;
 			char[] buffer = new char[BUFFER_SIZE];
-			while (totalRead < requiredBytesCount
-					&& (-1 != reader.read(buffer, 0,
-							(int) Math.min(BUFFER_SIZE, requiredBytesCount)))) {
-				filePart.add(new String(buffer));
+			while (totalRead < sourceFile.length()
+					&& (-1 != reader.read(
+							buffer,
+							0,
+							(int) Math.min(BUFFER_SIZE, sourceFile.length()
+									- totalRead)))) {
+				fileData.add(new String(buffer));
 				totalRead += BUFFER_SIZE;
 
 			}
@@ -82,51 +78,63 @@ public class ThreadedEncoder extends Huffman {
 				}
 			}
 		}
-		return filePart;
+
 	}
 
-	private void createThread(long seekToByte, long requiredBytesCount,
+	private ArrayList<String> readFilePart(int seekToBuffer,
+			int requiredBuffersCount) {
+		ArrayList<String> result = new ArrayList<>();
+		for (int bufferIndex = seekToBuffer; bufferIndex < seekToBuffer
+				+ requiredBuffersCount; bufferIndex++) {
+			result.add(fileData.get(bufferIndex));
+		}
+		return result;
+	}
+
+	private void createThread(int seekToBuffer, int requiredBuffersCount,
 			int threadIndex) {
 		ArrayList<String> rawData;
-		try {
-			rawData = readFilePart(seekToByte, requiredBytesCount);
-			Encoder r = new Encoder(rawData, outputDestination + ".part"
-					+ threadIndex);
-			Thread t = new Thread(r);
-			jobs[threadIndex] = t;
-		} catch (IOException e) {
+		rawData = readFilePart(seekToBuffer, requiredBuffersCount);
 
-			e.printStackTrace();
-		}
+		Encoder r = new Encoder(rawData, outputDestination + ".part"
+				+ threadIndex);
+		Thread t = new Thread(r);
+		jobs[threadIndex] = t;
 	}
 
 	public void runThreads() throws InterruptedException {
 
 		System.out.printf("%s", Thread.currentThread().getName());
 		// / initialize and feed threads
-		int seekToByte = 0;
-		long requiredBytesCount = bytesPerThread;
+		int seekToBuffer = 0;
+		int requiredBuffersCount = buffersPerThread;
 		logger.info("Started reading file to compress");
+
 		for (int index = 0; index < (maxTasksCount - 1); index++) {
-			createThread(seekToByte, requiredBytesCount, index);
-			seekToByte += bytesPerThread;
+			createThread(seekToBuffer, requiredBuffersCount, index);
+			String logMessage = "Compressing thread " + (index + 1)
+					+ " started";
+			logger.info(logMessage);
+			jobs[index].start();
+			seekToBuffer += buffersPerThread;
 		}
 
 		File file = new File(filePath);
-		long lastThreadPosition = bytesPerThread * (maxTasksCount - 1);
+		int lastThreadPosition = buffersPerThread * (maxTasksCount - 1);
 		if (file.length() - lastThreadPosition > 0) {
 			createThread(lastThreadPosition,
-					file.length() - lastThreadPosition, maxTasksCount - 1);
+					((int) file.length() / BUFFER_SIZE + 1)
+							- lastThreadPosition, maxTasksCount - 1);
+			String logMessage = "Compressing thread " + (maxTasksCount)
+					+ " started";
+			logger.info(logMessage);
+			jobs[maxTasksCount - 1].start();
 		} else {
-		// one thread is unneeded
+			// one thread is unneeded
 			maxTasksCount--;
 		}
+		fileData.clear();
 		// / run threads
-		for (int i = 0; i < maxTasksCount; i++) {
-			String logMessage = "Compressing thread "+ (i+1) +" started";
-			logger.info(logMessage);
-			jobs[i].start();
-		}
 		for (int i = 0; i < maxTasksCount; i++) {
 			jobs[i].join();
 		}

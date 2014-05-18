@@ -2,8 +2,10 @@ package edu.huffman;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilePermission;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -23,7 +25,6 @@ public class Encoder implements Runnable {
 	final static Logger logger = Logger.getLogger(Huffman.class.getName());
 	private Tree huffmanTree;
 	private ArrayList<String> rawData;
-	private String encodedResult;
 	private String resultFilepath;
 
 	public Encoder(ArrayList<String> rawData, String resultFilepath) {
@@ -31,6 +32,7 @@ public class Encoder implements Runnable {
 		this.rawData = rawData;
 		this.huffmanTree = new Tree();
 		this.resultFilepath = resultFilepath;
+		
 	}
 
 	/**
@@ -92,12 +94,11 @@ public class Encoder implements Runnable {
 
 	@Override
 	public void run() {
-		encodedResult = encode();
+		 encode();
 		logger.info(Thread.currentThread().getName() + "will flush");
-		flushContentToFile();
+		//flushContentToFile(encodedResult);
 
 	}
-
 
 	private String generateEncodedFileContent() {
 
@@ -105,24 +106,26 @@ public class Encoder implements Runnable {
 		String tree = getTree().toString();
 		result.append(tree);
 		result.append('\n');
-		
-		
-		result.append(encodedResult);
 		return result.toString();
 	}
 
-	private void flushContentToFile() {
+	private void flushContentToFile(String encodedResult) {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
-					new FileWriter(resultFilepath + ".txt")));
+					new FileWriter(resultFilepath + ".tree.txt")));
 			out.println(generateEncodedFileContent()); // output result
-
 			out.close();
+			FileOutputStream fos = new FileOutputStream(new File(resultFilepath
+					+ ".data"));
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			BinaryCodec codec = new BinaryCodec();
+			baos.write(codec.toByteArray(encodedResult));
+			// Put data in your baos
+			baos.writeTo(fos);
 		} catch (IOException e) {
 			System.err.println("Thread failed to flush to file");
 		}
 		logger.info(Thread.currentThread().getName() + "finished flushing");
 	}
-
 
 }

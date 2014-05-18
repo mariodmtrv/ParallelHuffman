@@ -18,18 +18,15 @@ public class HuffmanMultithreadedTest {
 
 	@Test
 	public void test() throws InterruptedException {
-		ThreadedEncoder encoder = new ThreadedEncoder("testfile.txt", 64, false);
-	//	encoder.runThreads();
-		BinaryCodec b =new BinaryCodec();
-		byte[] data = b.toByteArray("101010010101011010101010101110100");
-	System.out.println(data);
-	}
+		ThreadedEncoder encoder = new ThreadedEncoder("testfile.txt", 32, false);
+		encoder.runThreads();
+		}
 //@Test
 public void createFile() throws IOException{
 	Random randomGenerator = new Random();
 	PrintWriter out = new PrintWriter(new BufferedWriter(
 			new FileWriter("testfile.txt")));
-	for(int i =0; i<100000000;i++){
+	for(int i =0; i<200000000;i++){
 		out.print( (char)(randomGenerator.nextInt()%256));
 	}
 	out.close();
