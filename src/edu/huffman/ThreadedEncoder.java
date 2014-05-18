@@ -12,10 +12,14 @@ public class ThreadedEncoder extends Huffman {
 	 * The characters in the input string are ASCII encoded
 	 * */
 
-	private Integer bytesPerThread;
+	private Long bytesPerThread;
+	private Thread jobs[];
 
-	private void setBytesPerThread(int fileSize, int threadsCount) {
-		bytesPerThread = fileSize / ((threadsCount - 1) * BUFFER_SIZE);
+	private void initializeThreadParameters(long fileSize, int threadsCount) {
+
+		bytesPerThread = (fileSize / ((threadsCount - 1) * BUFFER_SIZE))
+				* BUFFER_SIZE;
+		jobs = new Thread[threadsCount];
 	}
 
 	/**
@@ -31,6 +35,8 @@ public class ThreadedEncoder extends Huffman {
 			Boolean isQuiet) {
 		super(filepath, maxTasksCount, isQuiet);
 		this.outputDestination = filepath + ".compressed";
+		File file = new File(filePath);
+		initializeThreadParameters(file.length(), maxTasksCount);
 	}
 
 	private ArrayList<String> readFilePart(long seekToByte,
@@ -60,7 +66,8 @@ public class ThreadedEncoder extends Huffman {
 			long totalRead = 0;
 			char[] buffer = new char[BUFFER_SIZE];
 			while (totalRead < requiredBytesCount
-					&& (-1 != reader.read(buffer, 0, BUFFER_SIZE))) {
+					&& (-1 != reader.read(buffer, 0,
+							(int) Math.min(BUFFER_SIZE, requiredBytesCount)))) {
 				filePart.add(new String(buffer));
 				totalRead += BUFFER_SIZE;
 
@@ -78,15 +85,46 @@ public class ThreadedEncoder extends Huffman {
 		return filePart;
 	}
 
-	public String generateEncodedFilePart(ArrayList<String> data) {
-		StringBuilder result = new StringBuilder();
-		Encoder encoder = new Encoder();
-		String encodedData = encoder.encode(data);
-		String tree = encoder.getTree().toString();
-		result.append(tree);
-		result.append('\n');
-		result.append(encodedData);
-		return result.toString();
+	private void createThread(long seekToByte, long requiredBytesCount,
+			int threadIndex) {
+		ArrayList<String> rawData;
+		try {
+			rawData = readFilePart(seekToByte, requiredBytesCount);
+			Encoder r = new Encoder(rawData, outputDestination + ".part"
+					+ threadIndex);
+			Thread t = new Thread(r);
+			jobs[threadIndex] = t;
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
 	}
-	
+
+	public void runThreads() {
+
+		System.out.printf("%s", Thread.currentThread().getName());
+		// / initialize and feed threads
+		int seekToByte = 0;
+		long requiredBytesCount = bytesPerThread;
+		for (int index = 0; index < (maxTasksCount - 1); index++) {
+			createThread(seekToByte, requiredBytesCount, index);
+			seekToByte += bytesPerThread;
+		}
+
+		File file = new File(filePath);
+		long lastThreadPosition = bytesPerThread * (maxTasksCount - 1);
+		if (file.length() - lastThreadPosition > 0) {
+			createThread(lastThreadPosition,
+					file.length() - lastThreadPosition, maxTasksCount - 1);
+		} else {
+		// one thread is unneeded
+			maxTasksCount--;
+		}
+		// / run threads
+		for (int i = 0; i < maxTasksCount; i++) {
+			jobs[i].start();
+		}
+
+	}
+
 }

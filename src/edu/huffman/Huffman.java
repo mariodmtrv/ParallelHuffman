@@ -20,8 +20,10 @@ public class Huffman {
 	 * */
 	Boolean isQuiet;
 	static final Integer MAX_DIFFERENT_CHARACTERS = 256;
-
-	static final Integer BUFFER_SIZE = 64;
+/**
+ * TODO : Set Buffer_size to 64
+ * */
+	static final Integer BUFFER_SIZE = 4;
 	/**
 	 * The huffman tree of the algorithm
 	 * */

@@ -11,7 +11,7 @@ import edu.huffman.Encoder;
 import edu.huffman.ThreadedEncoder;
 
 public class HuffmanProcessingTest {
-
+/*
 	private ArrayList<String> generateData() {
 
 		ArrayList<String> data = new ArrayList<>();
@@ -42,4 +42,5 @@ public class HuffmanProcessingTest {
 		ThreadedEncoder enc= new ThreadedEncoder("", 1, true);
 		System.out.println(enc.generateEncodedFilePart(generateData()));
 	}
+	*/
 }
