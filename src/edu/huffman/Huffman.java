@@ -3,10 +3,12 @@ package edu.huffman;
 import java.io.File;
 import java.io.ObjectInputStream.GetField;
 import java.text.ParseException;
+import java.util.logging.Logger;
 
 import edu.huffman.algorithm.Tree;
 
 public class Huffman {
+	final static Logger logger = Logger.getLogger(Huffman.class.getName()); 
 	/**
 	 * The maximum number of threads that the program may use
 	 * */
@@ -23,7 +25,7 @@ public class Huffman {
 /**
  * TODO : Set Buffer_size to 64
  * */
-	static final Integer BUFFER_SIZE = 4;
+	static final Integer BUFFER_SIZE = 64;
 	/**
 	 * The huffman tree of the algorithm
 	 * */
@@ -33,6 +35,7 @@ public class Huffman {
 		this.filePath = filepath;
 		this.maxTasksCount = maxTasksCount;
 		this.isQuiet = isQuiet;
+		
 	}
 
 	public void encode() {

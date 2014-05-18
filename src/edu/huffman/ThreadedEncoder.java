@@ -100,12 +100,13 @@ public class ThreadedEncoder extends Huffman {
 		}
 	}
 
-	public void runThreads() {
+	public void runThreads() throws InterruptedException {
 
 		System.out.printf("%s", Thread.currentThread().getName());
 		// / initialize and feed threads
 		int seekToByte = 0;
 		long requiredBytesCount = bytesPerThread;
+		logger.info("Started reading file to compress");
 		for (int index = 0; index < (maxTasksCount - 1); index++) {
 			createThread(seekToByte, requiredBytesCount, index);
 			seekToByte += bytesPerThread;
@@ -122,9 +123,13 @@ public class ThreadedEncoder extends Huffman {
 		}
 		// / run threads
 		for (int i = 0; i < maxTasksCount; i++) {
+			String logMessage = "Compressing thread "+ (i+1) +" started";
+			logger.info(logMessage);
 			jobs[i].start();
 		}
-
+		for (int i = 0; i < maxTasksCount; i++) {
+			jobs[i].join();
+		}
 	}
 
 }

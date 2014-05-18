@@ -13,17 +13,21 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import edu.BinaryCodec;
 import edu.huffman.algorithm.Tree;
 
 public class Encoder implements Runnable {
+	final static Logger logger = Logger.getLogger(Huffman.class.getName());
 	private Tree huffmanTree;
 	private ArrayList<String> rawData;
 	private String encodedResult;
 	private String resultFilepath;
 
 	public Encoder(ArrayList<String> rawData, String resultFilepath) {
+
 		this.rawData = rawData;
 		this.huffmanTree = new Tree();
 		this.resultFilepath = resultFilepath;
@@ -35,6 +39,7 @@ public class Encoder implements Runnable {
 	 * @return the encoded String
 	 * */
 	public String encode() {
+		logger.info(Thread.currentThread().getName() + "started encoding");
 		// builds the frequency map
 		int[] frequencyMap = buildFrequencyMap(rawData);
 		// builds the huffman tree
@@ -88,36 +93,36 @@ public class Encoder implements Runnable {
 	@Override
 	public void run() {
 		encodedResult = encode();
-		generateEncodedFileContent();
-		flushToFile();
+		logger.info(Thread.currentThread().getName() + "will flush");
+		flushContentToFile();
 
 	}
 
-	public String getEncodedResult() {
-		return encodedResult;
-	}
 
 	private String generateEncodedFileContent() {
 
 		StringBuilder result = new StringBuilder();
-		String encodedData = getEncodedResult();
 		String tree = getTree().toString();
 		result.append(tree);
 		result.append('\n');
-		result.append(encodedData);
+		
+		
+		result.append(encodedResult);
 		return result.toString();
 	}
 
-	private void flushToFile() {
+	private void flushContentToFile() {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
-					new FileWriter(resultFilepath)));
+					new FileWriter(resultFilepath + ".txt")));
 			out.println(generateEncodedFileContent()); // output result
+
 			out.close();
 		} catch (IOException e) {
 			System.err.println("Thread failed to flush to file");
 		}
-
+		logger.info(Thread.currentThread().getName() + "finished flushing");
 	}
+
 
 }
