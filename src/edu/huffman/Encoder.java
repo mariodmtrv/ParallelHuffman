@@ -18,7 +18,6 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import edu.BinaryCodec;
 import edu.huffman.algorithm.Tree;
 
 public class Encoder implements Runnable {
@@ -104,9 +103,9 @@ public class Encoder implements Runnable {
 
 	@Override
 	public void run() {
-		encode();
+		String encodedResult = encode();
 		logger.info(Thread.currentThread().getName() + "will flush");
-		// flushContentToFile(encodedResult);
+		flushContentsToFile(encodedResult);
 
 	}
 
@@ -119,19 +118,20 @@ public class Encoder implements Runnable {
 		return result.toString();
 	}
 
-	private void flushContentToFile(String encodedResult) {
+	private void flushContentsToFile(String encodedResult) {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
 					new FileWriter(String.format(resultFilepath
 							+ Huffman.treeFileExtension, this.partIndex))));
 			out.println(generateEncodedFileContent()); // output result
 			out.close();
+			
 			FileOutputStream fos = new FileOutputStream(new File(String.format(
 					resultFilepath + Huffman.compressedFileExtension,
 					this.partIndex)));
 			ByteArrayOutputStream binaryOutputStream = new ByteArrayOutputStream();
-			BinaryCodec codec = new BinaryCodec();
-			binaryOutputStream.write(codec.toByteArray(encodedResult));
+			
+			binaryOutputStream.write(ByteConverter.toByteArray(encodedResult));
 			// Put data in your baos
 			binaryOutputStream.writeTo(fos);
 		} catch (IOException e) {

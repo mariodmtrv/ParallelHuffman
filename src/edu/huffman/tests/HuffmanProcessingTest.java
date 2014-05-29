@@ -11,7 +11,7 @@ import edu.huffman.Encoder;
 import edu.huffman.ThreadedEncoder;
 
 public class HuffmanProcessingTest {
-/*
+
 	private ArrayList<String> generateData() {
 
 		ArrayList<String> data = new ArrayList<>();
@@ -19,7 +19,7 @@ public class HuffmanProcessingTest {
 		return data;
 
 	}
-
+/*
 	@Test
 	public void testEncoding_WithExpectedEncodedLength() {
 		Encoder encoder = new Encoder();

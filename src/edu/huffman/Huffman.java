@@ -25,7 +25,7 @@ public class Huffman {
 	/**
 	 * TODO : Set Buffer_size to 64
 	 * */
-	static final Integer BUFFER_SIZE = 2048;
+	static final Integer BUFFER_SIZE = 4096;
 	/**
 	 * The huffman tree of the algorithm
 	 * */

@@ -50,7 +50,7 @@ public class ThreadedEncoder extends Huffman {
 	}
 
 	private void readFile() throws IOException {
-
+logger.info("Started reading the file.");
 		File sourceFile = new File(filePath);
 
 		BufferedReader reader = null;
@@ -79,6 +79,7 @@ public class ThreadedEncoder extends Huffman {
 				}
 			}
 		}
+		logger.info("Finished reading the file.");
 
 	}
 
