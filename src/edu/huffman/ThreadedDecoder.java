@@ -27,5 +27,13 @@ public class ThreadedDecoder extends Huffman {
 			jobs[threadIndex].run();
 		}
 		// check if last thread exists
+		for (int threadIndex = 0; threadIndex < maxTasksCount - 1; threadIndex++) {
+			try {
+				jobs[threadIndex].join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }

@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import edu.huffman.algorithm.Tree;
 
 public class Encoder implements Runnable {
-	final static Logger logger = Logger.getLogger(Huffman.class.getName());
+	final static Logger logger = Logger.getLogger(Encoder.class.getName());
 	private Tree huffmanTree;
 	private ArrayList<String> rawData;
 	private String resultFilepath;
@@ -43,13 +43,13 @@ public class Encoder implements Runnable {
 	 * */
 	public String encode() {
 		logger.info(Thread.currentThread().getName()
-				+ "started generating tree data");
+				+ " started generating tree data");
 
 		// builds the frequency map
 		int[] frequencyMap = buildFrequencyMap(rawData);
 		// builds the huffman tree
 		huffmanTree.buildTree(frequencyMap);
-		logger.info(Thread.currentThread().getName() + "generated tree");
+		logger.info(Thread.currentThread().getName() + " generated tree");
 		// compresses the data
 		String compressed = compressData();
 		// raw data is not needed anymore
@@ -80,12 +80,12 @@ public class Encoder implements Runnable {
 	}
 
 	private String compressData() {
-		logger.info(Thread.currentThread().getName() + "started compressing.");
+		logger.info(Thread.currentThread().getName() + " started compressing.");
 		StringBuilder compressed = new StringBuilder();
 		for (String buffer : rawData) {
 			compressed.append(compressString(buffer));
 		}
-		logger.info(Thread.currentThread().getName() + "completed compression");
+		logger.info(Thread.currentThread().getName() + " completed compression");
 
 		return compressed.toString();
 	}
@@ -104,7 +104,7 @@ public class Encoder implements Runnable {
 	@Override
 	public void run() {
 		String encodedResult = encode();
-		logger.info(Thread.currentThread().getName() + "will flush");
+		logger.info(Thread.currentThread().getName() + " will flush");
 		flushContentsToFile(encodedResult);
 
 	}
