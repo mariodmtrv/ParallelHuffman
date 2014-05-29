@@ -26,13 +26,15 @@ public class Encoder implements Runnable {
 	private Tree huffmanTree;
 	private ArrayList<String> rawData;
 	private String resultFilepath;
+	private Integer partIndex;
 
-	public Encoder(ArrayList<String> rawData, String resultFilepath) {
+	public Encoder(ArrayList<String> rawData, String resultFilepath,
+			Integer partIndex) {
 
 		this.rawData = rawData;
 		this.huffmanTree = new Tree();
 		this.resultFilepath = resultFilepath;
-		
+		this.partIndex = partIndex;
 	}
 
 	/**
@@ -41,13 +43,18 @@ public class Encoder implements Runnable {
 	 * @return the encoded String
 	 * */
 	public String encode() {
-		logger.info(Thread.currentThread().getName() + "started encoding");
+		logger.info(Thread.currentThread().getName()
+				+ "started generating tree data");
+
 		// builds the frequency map
 		int[] frequencyMap = buildFrequencyMap(rawData);
 		// builds the huffman tree
 		huffmanTree.buildTree(frequencyMap);
+		logger.info(Thread.currentThread().getName() + "generated tree");
 		// compresses the data
-		String compressed = compressData(rawData);
+		String compressed = compressData();
+		// raw data is not needed anymore
+		rawData.clear();
 		return compressed;
 
 	}
@@ -73,11 +80,14 @@ public class Encoder implements Runnable {
 
 	}
 
-	private String compressData(ArrayList<String> data) {
+	private String compressData() {
+		logger.info(Thread.currentThread().getName() + "started compressing.");
 		StringBuilder compressed = new StringBuilder();
-		for (String buffer : data) {
+		for (String buffer : rawData) {
 			compressed.append(compressString(buffer));
 		}
+		logger.info(Thread.currentThread().getName() + "completed compression");
+
 		return compressed.toString();
 	}
 
@@ -94,9 +104,9 @@ public class Encoder implements Runnable {
 
 	@Override
 	public void run() {
-		 encode();
+		encode();
 		logger.info(Thread.currentThread().getName() + "will flush");
-		//flushContentToFile(encodedResult);
+		// flushContentToFile(encodedResult);
 
 	}
 
@@ -112,16 +122,18 @@ public class Encoder implements Runnable {
 	private void flushContentToFile(String encodedResult) {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
-					new FileWriter(resultFilepath + ".tree.txt")));
+					new FileWriter(String.format(resultFilepath
+							+ Huffman.treeFileExtension, this.partIndex))));
 			out.println(generateEncodedFileContent()); // output result
 			out.close();
-			FileOutputStream fos = new FileOutputStream(new File(resultFilepath
-					+ ".data"));
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			FileOutputStream fos = new FileOutputStream(new File(String.format(
+					resultFilepath + Huffman.compressedFileExtension,
+					this.partIndex)));
+			ByteArrayOutputStream binaryOutputStream = new ByteArrayOutputStream();
 			BinaryCodec codec = new BinaryCodec();
-			baos.write(codec.toByteArray(encodedResult));
+			binaryOutputStream.write(codec.toByteArray(encodedResult));
 			// Put data in your baos
-			baos.writeTo(fos);
+			binaryOutputStream.writeTo(fos);
 		} catch (IOException e) {
 			System.err.println("Thread failed to flush to file");
 		}

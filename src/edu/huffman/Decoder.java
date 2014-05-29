@@ -17,9 +17,11 @@ public class Decoder implements Runnable {
 	private Node currentNode;
 	private String filePath;
 	private BitSet dataSet;
+	private Integer partIndex;
 
-	public Decoder(String filePath) {
+	public Decoder(String filePath, Integer partIndex) {
 		this.filePath = filePath;
+		this.partIndex = partIndex;
 	}
 
 	/**

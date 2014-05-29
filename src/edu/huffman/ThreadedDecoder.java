@@ -20,11 +20,12 @@ public class ThreadedDecoder extends Huffman {
 
 	public void runThreads() {
 		jobs = new Thread[maxTasksCount];
-		for (int threadIndex = 0; threadIndex < maxTasksCount; threadIndex++) {
-			Decoder decoder = new Decoder("path");
+		for (int threadIndex = 0; threadIndex < maxTasksCount - 1; threadIndex++) {
+			Decoder decoder = new Decoder(filePath, threadIndex);
 			Thread t = new Thread(decoder);
 			jobs[threadIndex] = t;
-
+			jobs[threadIndex].run();
 		}
+		// check if last thread exists
 	}
 }

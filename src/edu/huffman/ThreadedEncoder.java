@@ -19,10 +19,11 @@ public class ThreadedEncoder extends Huffman {
 	public ThreadedEncoder(String filepath, Integer maxTasksCount,
 			Boolean isQuiet) {
 		super(filepath, maxTasksCount, isQuiet);
-		this.outputDestination = filepath + ".compressed";
+		this.outputDestination = filepath;
 		File file = new File(filePath);
 		fileData = new ArrayList<>();
 		initializeThreadParameters((int) file.length(), maxTasksCount);
+		
 	}
 
 	private void initializeThreadParameters(int fileSize, int threadsCount) {
@@ -96,8 +97,7 @@ public class ThreadedEncoder extends Huffman {
 		ArrayList<String> rawData;
 		rawData = readFilePart(seekToBuffer, requiredBuffersCount);
 
-		Encoder r = new Encoder(rawData, outputDestination + ".part"
-				+ threadIndex);
+		Encoder r = new Encoder(rawData, outputDestination, threadIndex);
 		Thread t = new Thread(r);
 		jobs[threadIndex] = t;
 	}
