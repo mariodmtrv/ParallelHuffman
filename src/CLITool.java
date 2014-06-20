@@ -13,19 +13,23 @@ public class CLITool {
 	 * */
 	private static final String[] QUIET_MODE_INDICATORS = { "-q", "-quiet" };
 
-	private static String getFilePath(String[] args) throws Exception {
+	public static String getFilePath(String[] args) throws Exception {
 		for (String filePathIndicator : FILE_PATH_INDICATORS) {
-			if (args[0] == filePathIndicator) {
+
+			if (args[0].contains(filePathIndicator)) {
+				
 				return args[1];
 			}
 		}
 		throw new Exception("No file path indicated");
 	}
 
-	private static Integer getMaxTasksCount(String[] args) throws Exception {
+	public static Integer getMaxTasksCount(String[] args) throws Exception {
 		for (String tasksIndicator : MAX_TASKS_COUNT_INDICATORS) {
-			if (args[2] == tasksIndicator) {
+			System.out.println(args[2]);
+			if (args[2].contains(tasksIndicator)) {
 				try {
+					System.out.println(args[3]);
 					Integer maxTasksCount = Integer.parseInt(args[3]);
 					if (maxTasksCount < 1) {
 						throw new NumberFormatException(
@@ -40,7 +44,7 @@ public class CLITool {
 		throw new Exception("Max tasks count reading failed");
 	}
 
-	private static Boolean getIsQuiet(String[] args) {
+	public static Boolean getIsQuiet(String[] args) {
 		if (args.length == 5) {
 			for (String isQuietIndicator : QUIET_MODE_INDICATORS) {
 				if (args[4] == isQuietIndicator) {
@@ -50,4 +54,5 @@ public class CLITool {
 		}
 		return false;
 	}
+
 }

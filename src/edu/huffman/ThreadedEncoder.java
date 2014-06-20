@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
-public class ThreadedEncoder extends Huffman {
+public class ThreadedEncoder extends HuffmanInterface {
 	/**
 	 * The characters in the input string are ASCII encoded
 	 * */
@@ -22,22 +22,21 @@ public class ThreadedEncoder extends Huffman {
 		this.outputDestination = filepath;
 		File file = new File(filePath);
 		fileData = new ArrayList<>();
-		initializeThreadParameters((int) file.length(), maxTasksCount);
-		
-	}
-
-	private void initializeThreadParameters(int fileSize, int threadsCount) {
-		if (threadsCount > 1) {
-			buffersPerThread = (fileSize / ((threadsCount - 1) * BUFFER_SIZE));
-		} else {
-			buffersPerThread = 0;
-		}
-		jobs = new Thread[threadsCount];
 		try {
 			readFile();
 		} catch (IOException e) {
 			System.err.println("Reading file failed.");
 		}
+	}
+
+	private void initializeThreadParameters(int fileLines, int threadsCount) {
+		if (threadsCount > 1) {
+			buffersPerThread = (fileLines / ((threadsCount - 1)));
+		} else {
+			buffersPerThread = 0;
+		}
+		jobs = new Thread[threadsCount];
+
 	}
 
 	/**
@@ -50,35 +49,23 @@ public class ThreadedEncoder extends Huffman {
 	}
 
 	private void readFile() throws IOException {
-logger.info("Started reading the file.");
+		logger.info("Started reading the file.");
 		File sourceFile = new File(filePath);
 
 		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(sourceFile));
-			String line;
-			int totalRead = 0;
-			char[] buffer = new char[BUFFER_SIZE];
-			while (totalRead < sourceFile.length()
-					&& (-1 != reader.read(
-							buffer,
-							0,
-							(int) Math.min(BUFFER_SIZE, sourceFile.length()
-									- totalRead)))) {
-				fileData.add(new String(buffer));
-				totalRead += BUFFER_SIZE;
+		try (BufferedReader fileReader = new BufferedReader(new FileReader(
+				sourceFile))) {
 
-			}
-		} catch (Exception e) {
+			String sCurrentLine;
 
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (Exception ignore) {
-				}
+			while ((sCurrentLine = fileReader.readLine()) != null) {
+				fileData.add(sCurrentLine);
 			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		initializeThreadParameters(fileData.size(), maxTasksCount);
 		logger.info("Finished reading the file.");
 
 	}
@@ -86,6 +73,7 @@ logger.info("Started reading the file.");
 	private ArrayList<String> readFilePart(int seekToBuffer,
 			int requiredBuffersCount) {
 		ArrayList<String> result = new ArrayList<>();
+		
 		for (int bufferIndex = seekToBuffer; bufferIndex < seekToBuffer
 				+ requiredBuffersCount; bufferIndex++) {
 			result.add(fileData.get(bufferIndex));
@@ -97,16 +85,13 @@ logger.info("Started reading the file.");
 			int threadIndex) {
 		ArrayList<String> rawData;
 		rawData = readFilePart(seekToBuffer, requiredBuffersCount);
-
 		Encoder r = new Encoder(rawData, outputDestination, threadIndex);
 		Thread t = new Thread(r);
 		jobs[threadIndex] = t;
 	}
 
-	public void runThreads() throws InterruptedException {
-
-		System.out.printf("%s", Thread.currentThread().getName());
-		// / initialize and feed threads
+	public void runThreads() throws InterruptedException { // / initialize and
+															// feed threads
 		int seekToBuffer = 0;
 		int requiredBuffersCount = buffersPerThread;
 		logger.info("Started reading file to compress");
@@ -124,8 +109,8 @@ logger.info("Started reading the file.");
 		int lastThreadPosition = buffersPerThread * (maxTasksCount - 1);
 		if (file.length() - lastThreadPosition > 0) {
 			createThread(lastThreadPosition,
-					((int) file.length() / BUFFER_SIZE + 1)
-							- lastThreadPosition, maxTasksCount - 1);
+					fileData.size() - lastThreadPosition,
+					maxTasksCount - 1);
 			String logMessage = "Compressing thread " + (maxTasksCount)
 					+ " started";
 			logger.info(logMessage);
@@ -139,6 +124,8 @@ logger.info("Started reading the file.");
 		for (int i = 0; i < maxTasksCount; i++) {
 			jobs[i].join();
 		}
+		System.out.println("Total construction time :"
+				+ Encoder.getFrequencyTableConstructionTime());
 	}
 
 }

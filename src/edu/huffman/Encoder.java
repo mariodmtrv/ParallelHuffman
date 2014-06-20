@@ -26,6 +26,7 @@ public class Encoder implements Runnable {
 	private ArrayList<String> rawData;
 	private String resultFilepath;
 	private Integer partIndex;
+	private static volatile long frequencyTableConstructionTime = 0;
 
 	public Encoder(ArrayList<String> rawData, String resultFilepath,
 			Integer partIndex) {
@@ -46,9 +47,13 @@ public class Encoder implements Runnable {
 				+ " started generating tree data");
 
 		// builds the frequency map
+		long startTime = System.currentTimeMillis();
 		int[] frequencyMap = buildFrequencyMap(rawData);
 		// builds the huffman tree
 		huffmanTree.buildTree(frequencyMap);
+		long endTime = System.currentTimeMillis();
+		long executionTime = endTime - startTime;
+		frequencyTableConstructionTime += executionTime;
 		logger.info(Thread.currentThread().getName() + " generated tree");
 		// compresses the data
 		String compressed = compressData();
@@ -70,7 +75,7 @@ public class Encoder implements Runnable {
 	}
 
 	private int[] buildFrequencyMap(ArrayList<String> data) {
-		int[] frequencyMap = new int[Huffman.MAX_DIFFERENT_CHARACTERS];
+		int[] frequencyMap = new int[HuffmanInterface.MAX_DIFFERENT_CHARACTERS];
 		for (String buffer : data) {
 			frequencyMap = addFrequenciesFromBuffer(buffer.toCharArray(),
 					frequencyMap);
@@ -105,6 +110,7 @@ public class Encoder implements Runnable {
 	public void run() {
 		String encodedResult = encode();
 		logger.info(Thread.currentThread().getName() + " will flush");
+		System.out.println("RESULT" + encodedResult);
 		flushContentsToFile(encodedResult);
 
 	}
@@ -122,22 +128,26 @@ public class Encoder implements Runnable {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
 					new FileWriter(String.format(resultFilepath
-							+ Huffman.treeFileExtension, this.partIndex))));
+							+ HuffmanInterface.treeFileExtension, this.partIndex))));
 			out.println(generateEncodedFileContent()); // output result
 			out.close();
-			
+
 			FileOutputStream fos = new FileOutputStream(new File(String.format(
-					resultFilepath + Huffman.compressedFileExtension,
+					resultFilepath + HuffmanInterface.compressedFileExtension,
 					this.partIndex)));
 			ByteArrayOutputStream binaryOutputStream = new ByteArrayOutputStream();
-			
+System.out.println(encodedResult);
 			binaryOutputStream.write(ByteConverter.toByteArray(encodedResult));
-			// Put data in your baos
+			// Put data 
 			binaryOutputStream.writeTo(fos);
+			fos.close();
 		} catch (IOException e) {
 			System.err.println("Thread failed to flush to file");
 		}
 		logger.info(Thread.currentThread().getName() + "finished flushing");
 	}
 
+	public static long getFrequencyTableConstructionTime() {
+		return frequencyTableConstructionTime;
+	}
 }

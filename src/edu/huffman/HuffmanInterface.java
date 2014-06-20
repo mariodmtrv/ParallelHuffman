@@ -3,12 +3,13 @@ package edu.huffman;
 import java.io.File;
 import java.io.ObjectInputStream.GetField;
 import java.text.ParseException;
+import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 import edu.huffman.algorithm.Tree;
 
-public class Huffman {
-	final static Logger logger = Logger.getLogger(Huffman.class.getName());
+public class HuffmanInterface {
+	final static Logger logger = Logger.getLogger(HuffmanInterface.class.getName());
 	/**
 	 * The maximum number of threads that the program may use
 	 * */
@@ -23,10 +24,6 @@ public class Huffman {
 	Boolean isQuiet;
 	static final Integer MAX_DIFFERENT_CHARACTERS = 256;
 	/**
-	 * TODO : Set Buffer_size to 64
-	 * */
-	static final Integer BUFFER_SIZE = 4096;
-	/**
 	 * The huffman tree of the algorithm
 	 * */
 	Tree huffmanTree;
@@ -35,24 +32,18 @@ public class Huffman {
 	static final String compressedFileExtension = ".part%d.data.compressed";
 	static final String decompressedFileExtension = ".part%d.decompressed";
 
-	public Huffman(String filepath, Integer maxTasksCount, Boolean isQuiet) {
+	public HuffmanInterface(String filepath, Integer maxTasksCount, Boolean isQuiet) {
 		this.filePath = filepath;
 		this.maxTasksCount = maxTasksCount;
 		this.isQuiet = isQuiet;
+		if(this.isQuiet){
+			 for(Handler iHandler:logger.getParent().getHandlers())
+		        {
+		        logger.getParent().removeHandler(iHandler);
+		        }
+			
+		}
 
 	}
-
-	public void encode() {
-
-	}
-
-	public void decode() {
-
-	}
-	/*
-	 * public static void main(String[] args) throws Exception { String[] args1
-	 * = { "-f", "hello.bat", "-t", "535" }; filePath = getFilePath(args1);
-	 * maxTasksCount = getMaxTasksCount(args1); isQuiet = getIsQuiet(args1); }
-	 */
 
 }

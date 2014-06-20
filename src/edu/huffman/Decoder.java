@@ -87,14 +87,14 @@ public class Decoder implements Runnable {
 		logger.info(Thread.currentThread().getName() + " started collecting tree and file data.");
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(
-					String.format(filePath + Huffman.treeFileExtension,
+					String.format(filePath + HuffmanInterface.treeFileExtension,
 							this.partIndex)));
 			Tree tree = new Tree();
 			tree.deserialize(reader.readLine());
 			huffmanTree = tree.getInnerTree();
 			this.currentNode = huffmanTree;
 			File file = new File(String.format(filePath
-					+ Huffman.compressedFileExtension, this.partIndex));
+					+ HuffmanInterface.compressedFileExtension, this.partIndex));
 			byte[] fileData = new byte[(int) file.length()];
 			DataInputStream dis = new DataInputStream(new FileInputStream(file));
 			dis.close();
@@ -113,7 +113,7 @@ public class Decoder implements Runnable {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(new BufferedWriter(new FileWriter(
-					String.format(filePath + Huffman.decompressedFileExtension,
+					String.format(filePath + HuffmanInterface.decompressedFileExtension,
 							this.partIndex))));
 			out.println(decoded); // output result
 			logger.info(Thread.currentThread().getName() + " finished flushing.");
