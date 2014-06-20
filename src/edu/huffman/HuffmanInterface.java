@@ -1,12 +1,12 @@
 package edu.huffman;
 
+import edu.huffman.algorithm.Tree;
+
 import java.io.File;
 import java.io.ObjectInputStream.GetField;
 import java.text.ParseException;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
-
-import edu.huffman.algorithm.Tree;
 
 public class HuffmanInterface {
 	final static Logger logger = Logger.getLogger(HuffmanInterface.class.getName());

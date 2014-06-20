@@ -15,8 +15,8 @@ import edu.huffman.ThreadedEncoder;
 public class HuffmanMultithreadedTest {
 
 	@Test
-	public void test() throws InterruptedException {
-		ThreadedEncoder encoder = new ThreadedEncoder("tests/testfile16.txt", 64, false);
+	public void test16M() throws InterruptedException {
+		ThreadedEncoder encoder = new ThreadedEncoder("tests/testfile16.txt",1, false);
 		encoder.runThreads();
 		}
 

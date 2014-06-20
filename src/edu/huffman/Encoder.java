@@ -1,5 +1,7 @@
 package edu.huffman;
 
+import edu.huffman.algorithm.Tree;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -18,10 +20,9 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import edu.huffman.algorithm.Tree;
-
 public class Encoder implements Runnable {
-	final static Logger logger = Logger.getLogger(Encoder.class.getName());
+	final static Logger logger = Logger
+			.getLogger(Encoder.class.getName());
 	private Tree huffmanTree;
 	private ArrayList<String> rawData;
 	private String resultFilepath;
@@ -91,7 +92,7 @@ public class Encoder implements Runnable {
 			compressed.append(compressString(buffer));
 		}
 		logger.info(Thread.currentThread().getName() + " completed compression");
-
+		System.out.println("DATA COMPRESSED" + compressed);
 		return compressed.toString();
 	}
 
@@ -115,7 +116,7 @@ public class Encoder implements Runnable {
 
 	}
 
-	private String generateEncodedFileContent() {
+	private String generateFileTree() {
 
 		StringBuilder result = new StringBuilder();
 		String tree = getTree().toString();
@@ -128,17 +129,18 @@ public class Encoder implements Runnable {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
 					new FileWriter(String.format(resultFilepath
-							+ HuffmanInterface.treeFileExtension, this.partIndex))));
-			out.println(generateEncodedFileContent()); // output result
+							+ HuffmanInterface.treeFileExtension,
+							this.partIndex))));
+			out.println(generateFileTree()); // output result
 			out.close();
 
 			FileOutputStream fos = new FileOutputStream(new File(String.format(
 					resultFilepath + HuffmanInterface.compressedFileExtension,
 					this.partIndex)));
 			ByteArrayOutputStream binaryOutputStream = new ByteArrayOutputStream();
-System.out.println(encodedResult);
-			binaryOutputStream.write(ByteConverter.toByteArray(encodedResult));
-			// Put data 
+			byte[] fileData = ByteConverter.toByteArray(encodedResult);
+			binaryOutputStream.write(fileData);
+			// Put data
 			binaryOutputStream.writeTo(fos);
 			fos.close();
 		} catch (IOException e) {

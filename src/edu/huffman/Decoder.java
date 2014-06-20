@@ -1,5 +1,9 @@
 package edu.huffman;
 
+import edu.huffman.algorithm.Node;
+import  edu.huffman.algorithm.Tree;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -9,14 +13,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.BitSet;
 import java.util.logging.Logger;
 
-import edu.huffman.algorithm.Node;
-import edu.huffman.algorithm.Tree;
-
-public class Decoder implements Runnable {
+public class Decoder implements Runnable{
 	private Node huffmanTree;
 	private Node currentNode;
 	private String filePath;
@@ -73,8 +75,7 @@ public class Decoder implements Runnable {
 		logger.info(Thread.currentThread().getName() + " finished decompressing.");
 		return decodedString.toString();
 	}
-
-	@Override
+@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		
@@ -95,11 +96,15 @@ public class Decoder implements Runnable {
 			this.currentNode = huffmanTree;
 			File file = new File(String.format(filePath
 					+ HuffmanInterface.compressedFileExtension, this.partIndex));
-			byte[] fileData = new byte[(int) file.length()];
+		/*	byte[] fileData = new byte[(int) file.length()];
 			DataInputStream dis = new DataInputStream(new FileInputStream(file));
-			dis.close();
+			
 			dis.readFully(fileData);
-			dataSet = BitSet.valueOf(fileData);
+			dis.close();*/
+			String fileName = String.format(filePath
+					+ HuffmanInterface.compressedFileExtension, this.partIndex);
+			byte[] fileData = read(fileName);
+			dataSet = ByteConverter.fromByteArray(fileData);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -107,6 +112,45 @@ public class Decoder implements Runnable {
 		logger.info(Thread.currentThread().getName() + " finished collecting data.");
 
 	}
+	/** Read the given binary file, and return its contents as a byte array.*/ 
+	  byte[] read(String aInputFileName){
+	   
+	    File file = new File(aInputFileName);
+	   // log("File size: " + file.length());
+	    byte[] result = new byte[(int)file.length()];
+	    try {
+	      InputStream input = null;
+	      try {
+	        int totalBytesRead = 0;
+	        input = new BufferedInputStream(new FileInputStream(file));
+	        while(totalBytesRead < result.length){
+	          int bytesRemaining = result.length - totalBytesRead;
+	          //input.read() returns -1, 0, or more :
+	          int bytesRead = input.read(result, totalBytesRead, bytesRemaining); 
+	          if (bytesRead > 0){
+	            totalBytesRead = totalBytesRead + bytesRead;
+	          }
+	        }
+	        /*
+	         the above style is a bit tricky: it places bytes into the 'result' array; 
+	         'result' is an output parameter;
+	         the while loop usually has a single iteration only.
+	        */
+	      //  log("Num bytes read: " + totalBytesRead);
+	      }
+	      finally {
+	      //  log("Closing input stream.");
+	        input.close();
+	      }
+	    }
+	    catch (FileNotFoundException ex) {
+	   //   log("File not found.");
+	    }
+	    catch (IOException ex) {
+	     // log(ex);
+	    }
+	    return result;
+	  }
 
 	private void writeToFile(String decoded) {
 		logger.info(Thread.currentThread().getName() + " will flush.");

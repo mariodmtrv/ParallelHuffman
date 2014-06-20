@@ -1,13 +1,16 @@
 package edu.huffman.algorithm;
 
+
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tree {
-	public static final Boolean leftDirection = false;
-	public static final Boolean rightDirection = true;
+	public static final char leftDirectionChar = '0';
+	public static final char rightDirectionChar = '1';
+	public static final boolean leftDirection = false;
+	public static final boolean rightDirection = true;
 	private Node root;
 	private HashMap<Character, String> characterCodeMap;
 
@@ -92,12 +95,12 @@ public class Tree {
 
 		if (leftTree != null) {
 			StringBuilder currentLeft = new StringBuilder(characterCode);
-			currentLeft.append(Tree.leftDirection);
+			currentLeft.append(Tree.leftDirectionChar);
 			addCharCodeToTable(leftTree, currentLeft);
 		}
 		if (rightTree != null) {
 			StringBuilder currentRight = new StringBuilder(characterCode);
-			currentRight.append(Tree.rightDirection);
+			currentRight.append(Tree.rightDirectionChar);
 			addCharCodeToTable(rightTree, currentRight);
 		}
 	}

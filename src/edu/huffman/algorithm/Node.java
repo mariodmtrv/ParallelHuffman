@@ -1,5 +1,6 @@
 package edu.huffman.algorithm;
 
+
 public class Node implements Comparable<Node> {
 	private char character;
 	private int frequency;

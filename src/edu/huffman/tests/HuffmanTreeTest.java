@@ -1,11 +1,10 @@
 package edu.huffman.tests;
 
 import static org.junit.Assert.*;
+import edu.huffman.algorithm.Tree;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import edu.huffman.algorithm.Tree;
 
 public class HuffmanTreeTest {
 
