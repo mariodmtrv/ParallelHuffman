@@ -101,9 +101,13 @@ public class ThreadedEncoder extends HuffmanInterface {
 			String logMessage = "Compressing thread " + (index + 1)
 					+ " started";
 			logger.info(logMessage);
-			jobs[index].start();
+			
 			seekToBuffer += buffersPerThread;
 		}
+		long startTime = System.currentTimeMillis();
+for(int index = 0; index<(maxTasksCount-1);index++){
+	jobs[index].start();
+}
 
 		File file = new File(filePath);
 		int lastThreadPosition = buffersPerThread * (maxTasksCount - 1);
@@ -124,8 +128,10 @@ public class ThreadedEncoder extends HuffmanInterface {
 		for (int i = 0; i < maxTasksCount; i++) {
 			jobs[i].join();
 		}
-		System.out.println("Total construction time :"
-				+ Encoder.getFrequencyTableConstructionTime());
+		long endTime = System.currentTimeMillis();
+		long executionTime = endTime - startTime;
+		System.out.println("Total construction time :" + executionTime);
+		 //+Encoder.getFrequencyTableConstructionTime());
 	}
 
 }

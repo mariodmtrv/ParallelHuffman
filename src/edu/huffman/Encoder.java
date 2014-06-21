@@ -16,6 +16,7 @@ import java.io.ObjectInputStream.GetField;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -48,20 +49,20 @@ public class Encoder implements Runnable {
 				+ " started generating tree data");
 
 		// builds the frequency map
-		long startTime = System.currentTimeMillis();
-		int[] frequencyMap = buildFrequencyMap(rawData);
+		
+		HashMap<Character, Integer> frequencyMap = buildFrequencyMap(rawData);
 		// builds the huffman tree
 		huffmanTree.buildTree(frequencyMap);
-		long endTime = System.currentTimeMillis();
-		long executionTime = endTime - startTime;
-		frequencyTableConstructionTime += executionTime;
+		
+		
 		// compresses the data
-		String compressed = compressData();
+		//String compressed = compressData();
 		
 		logger.info(Thread.currentThread().getName() + " generated tree");
 		// raw data is not needed anymore
 		rawData.clear();
-		return compressed;
+		//return compressed;
+		return null;
 
 	}
 
@@ -69,15 +70,23 @@ public class Encoder implements Runnable {
 		return huffmanTree;
 	}
 
-	private int[] addFrequenciesFromBuffer(char[] buffer, int[] frequencyMap) {
+	private HashMap<Character, Integer> addFrequenciesFromBuffer(char[] buffer, HashMap<Character, Integer> map) {
+		
 		for (char character : buffer) {
-			frequencyMap[(int) character]++;
+		//	frequencyMap[(int) character]++;
+			if(!map.containsKey(character)){
+			map.put(character, 1);
+			}
+			else{
+				int x = map.get(character);
+				map.put(character, x+1);
+			}
 		}
-		return frequencyMap;
+		return map;
 	}
 
-	private int[] buildFrequencyMap(ArrayList<String> data) {
-		int[] frequencyMap = new int[HuffmanInterface.MAX_DIFFERENT_CHARACTERS];
+	private HashMap<Character, Integer>buildFrequencyMap(ArrayList<String> data) {
+		HashMap<Character, Integer> frequencyMap = new HashMap<>();
 		for (String buffer : data) {
 			frequencyMap = addFrequenciesFromBuffer(buffer.toCharArray(),
 					frequencyMap);
@@ -111,7 +120,7 @@ public class Encoder implements Runnable {
 	public void run() {
 		String encodedResult = encode();
 		logger.info(Thread.currentThread().getName() + " will flush");
-		flushContentsToFile(encodedResult);
+		//flushContentsToFile(encodedResult);
 
 	}
 

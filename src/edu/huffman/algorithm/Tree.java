@@ -122,7 +122,7 @@ public class Tree {
 	 *            - the frequency of all characters, used to create the initial
 	 *            nodes of the tree
 	 * */
-	public void buildTree(int[] frequencyMap) {
+	public void buildTree(HashMap<Character, Integer>  frequencyMap) {
 		PriorityQueue<Node> availableNodes = buildInitialTrees(frequencyMap);
 		Node tree = joinAllTreeNodes(availableNodes);
 		this.root = tree;
@@ -138,15 +138,14 @@ public class Tree {
 	 *            nodes of the tree
 	 * @return availableNodes - a priority queue containing single-node trees
 	 * */
-	private PriorityQueue<Node> buildInitialTrees(int[] frequencyMap) {
+	private PriorityQueue<Node> buildInitialTrees(HashMap<Character, Integer> frequencyMap) {
 		PriorityQueue<Node> availableNodes = new PriorityQueue<>();
-		for (int charIndex = 0; charIndex < frequencyMap.length; charIndex++) {
-			if (frequencyMap[charIndex] > 0) {
-				Node availableNode = new Node((char) charIndex,
-						frequencyMap[charIndex]);
+		for(Character character:frequencyMap.keySet()){
+				Node availableNode = new Node((char)character,
+						frequencyMap.get(character));
 				availableNodes.add(availableNode);
 			}
-		}
+		
 		return availableNodes;
 	}
 

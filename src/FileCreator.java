@@ -20,7 +20,7 @@ public class FileCreator {
 	// 2^24 = 256 MB
 	try (BufferedWriter writer = Files.newBufferedWriter(filePath,
 			charset)) {
-		for (int i = 0; i < 1 << 24; i++) {
+		for (int i = 0; i < 1 << 22; i++) {
 
 			char c[] = new char[16];
 
