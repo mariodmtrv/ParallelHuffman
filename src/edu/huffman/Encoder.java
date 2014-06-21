@@ -55,9 +55,10 @@ public class Encoder implements Runnable {
 		long endTime = System.currentTimeMillis();
 		long executionTime = endTime - startTime;
 		frequencyTableConstructionTime += executionTime;
-		logger.info(Thread.currentThread().getName() + " generated tree");
 		// compresses the data
 		String compressed = compressData();
+		
+		logger.info(Thread.currentThread().getName() + " generated tree");
 		// raw data is not needed anymore
 		rawData.clear();
 		return compressed;
@@ -92,8 +93,7 @@ public class Encoder implements Runnable {
 			compressed.append(compressString(buffer));
 		}
 		logger.info(Thread.currentThread().getName() + " completed compression");
-		System.out.println("DATA COMPRESSED" + compressed);
-		return compressed.toString();
+			return compressed.toString();
 	}
 
 	/**
@@ -111,7 +111,6 @@ public class Encoder implements Runnable {
 	public void run() {
 		String encodedResult = encode();
 		logger.info(Thread.currentThread().getName() + " will flush");
-		System.out.println("RESULT" + encodedResult);
 		flushContentsToFile(encodedResult);
 
 	}

@@ -20,7 +20,7 @@ public class ThreadedEncoder extends HuffmanInterface {
 			Boolean isQuiet) {
 		super(filepath, maxTasksCount, isQuiet);
 		this.outputDestination = filepath;
-		File file = new File(filePath);
+		//File file = new File(filePath);
 		fileData = new ArrayList<>();
 		try {
 			readFile();
@@ -107,7 +107,7 @@ public class ThreadedEncoder extends HuffmanInterface {
 
 		File file = new File(filePath);
 		int lastThreadPosition = buffersPerThread * (maxTasksCount - 1);
-		if (file.length() - lastThreadPosition > 0) {
+		if (fileData.size() - lastThreadPosition > 0) {
 			createThread(lastThreadPosition,
 					fileData.size() - lastThreadPosition,
 					maxTasksCount - 1);

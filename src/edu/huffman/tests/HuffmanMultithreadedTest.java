@@ -16,7 +16,7 @@ public class HuffmanMultithreadedTest {
 
 	@Test
 	public void test16M() throws InterruptedException {
-		ThreadedEncoder encoder = new ThreadedEncoder("tests/testfile16.txt",1, false);
+		ThreadedEncoder encoder = new ThreadedEncoder("tests/testfile64M.txt",32, false);
 		encoder.runThreads();
 		}
 
