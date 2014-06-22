@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.ObjectInputStream.GetField;
 import java.text.ParseException;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HuffmanInterface {
@@ -37,10 +38,11 @@ public class HuffmanInterface {
 		this.maxTasksCount = maxTasksCount;
 		this.isQuiet = isQuiet;
 		if(this.isQuiet){
-			 for(Handler iHandler:logger.getParent().getHandlers())
+			/* for(Handler iHandler:logger.getParent().getHandlers())
 		        {
 		        logger.getParent().removeHandler(iHandler);
-		        }
+		        }*/
+			logger.setLevel(Level.OFF);
 			
 		}
 

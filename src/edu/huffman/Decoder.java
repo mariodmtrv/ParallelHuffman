@@ -131,11 +131,6 @@ public class Decoder implements Runnable{
 	            totalBytesRead = totalBytesRead + bytesRead;
 	          }
 	        }
-	        /*
-	         the above style is a bit tricky: it places bytes into the 'result' array; 
-	         'result' is an output parameter;
-	         the while loop usually has a single iteration only.
-	        */
 	      //  log("Num bytes read: " + totalBytesRead);
 	      }
 	      finally {
